@@ -8,6 +8,7 @@ import SignUpPage from "./pages/SignUpPage";
 import { useAuthStore } from "./store/useAuthStore";
 import { useEffect } from "react";
 import { Loader } from "lucide-react";
+import { useThemeStore } from "./store/useThemeStore";
 // Define the expected shape of the auth store
 
 
@@ -15,6 +16,9 @@ import { Loader } from "lucide-react";
 const App = () => {
   const { authUser, checkAuth, isCheckingAuth } = useAuthStore() as { authUser: any; checkAuth: () => void; isCheckingAuth: boolean };
   
+  const { theme } = useThemeStore() as { theme: string }
+
+
   useEffect(() => {
     checkAuth();
   }, [checkAuth]);
@@ -31,7 +35,7 @@ const App = () => {
 
   return (
     <>
-      <div>
+      <div data-theme={theme}>
         <Navbar />
         <Routes>
           <Route
@@ -40,7 +44,7 @@ const App = () => {
           />
           <Route path="/signup" element={ !authUser ? <SignUpPage /> : <Navigate to="/" />} />
           <Route path="/login" element={!authUser ? <LoginPage /> : <Navigate to="/" /> } />
-          <Route path="/setting" element={<SettingsPage />} />
+          <Route path="/settings" element={<SettingsPage />} />
           <Route
             path="/profile"
             element={authUser ? <ProfilePage /> : <Navigate to="/login" />}
