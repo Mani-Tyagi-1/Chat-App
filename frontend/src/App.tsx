@@ -14,9 +14,12 @@ import { useThemeStore } from "./store/useThemeStore";
 
 
 const App = () => {
-  const { authUser, checkAuth, isCheckingAuth } = useAuthStore() as { authUser: any; checkAuth: () => void; isCheckingAuth: boolean };
+  const { authUser, checkAuth, isCheckingAuth, onlineUsers } = useAuthStore() as { authUser: any; checkAuth: () => void; isCheckingAuth: boolean; onlineUsers: any };
   
   const { theme } = useThemeStore() as { theme: string }
+
+
+  console.log({ onlineUsers });
 
 
   useEffect(() => {
@@ -31,7 +34,6 @@ const App = () => {
     </div>
 
   )
-
 
   return (
     <>

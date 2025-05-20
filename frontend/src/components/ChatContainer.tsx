@@ -61,18 +61,17 @@ const ChatContainer = () => {
             }`}
             ref={messageEndRef}
           >
-            <div className=" chat-image avatar">
-              <div className="size-10 rounded-full border">
-                <img
-                  src={
-                    message.senderId === authUser._id
-                      ? authUser.profilePic || "/avatar.png"
-                      : selectedUser.profilePic || "/avatar.png"
-                  }
-                  alt="profile pic"
-                />
+            {message.senderId !== authUser._id && (
+              <div className="chat-image avatar">
+                <div className="size-7 rounded-full border">
+                  <img
+                    src={selectedUser.profilePic || "/avatar.png"}
+                    alt="profile pic"
+                  />
+                </div>
               </div>
-            </div>
+            )}
+
             <div className="chat-header mb-1">
               <time className="text-xs opacity-50 ml-1">
                 {formatMessageTime(message.createdAt)}
