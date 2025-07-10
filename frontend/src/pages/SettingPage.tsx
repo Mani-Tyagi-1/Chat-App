@@ -16,7 +16,7 @@ const SettingsPage = () => {
 
   return (
     <div className="h-screen container mx-auto px-4 pt-20 max-w-screen max-h-screen">
-      <div className="flex justify-center items-center gap-30 h-full ">
+      <div className="flex flex-col md:flex-row justify-center items-center gap-10 md:gap-30 h-full mt-50 md:mt-0 ">
         <div className="flex flex-col gap-8 ">
           <div className="flex flex-col gap-1">
             <h2 className="text-lg font-semibold">Theme</h2>
@@ -55,7 +55,7 @@ const SettingsPage = () => {
         </div>
 
         {/* Preview Section */}
-        <div>
+        <div className="">
           <h3 className="text-lg font-semibold mb-3">Preview</h3>
           <div className="rounded-xl border border-base-300 overflow-hidden bg-base-100 shadow-lg">
             <div className="p-4 bg-base-200">

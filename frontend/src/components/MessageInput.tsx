@@ -1,7 +1,7 @@
 import { useRef, useState } from "react";
 import { useChatStore } from "../store/useChatStore";
-import { Image, Send, X } from "lucide-react";
-import toast from "react-hot-toast";
+import {  Send, X } from "lucide-react";
+// import toast from "react-hot-toast";
 
 const MessageInput = () => {
 
@@ -11,19 +11,19 @@ const MessageInput = () => {
     const { sendMessage } = useChatStore()
 
 
-    const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const file = e.target.files?.[0];
-        if (!file?.type.startsWith('image/')) {
-            toast.error('Please select an image file.');
-            return;
-        }
+    // const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    //     const file = e.target.files?.[0];
+    //     if (!file?.type.startsWith('image/')) {
+    //         toast.error('Please select an image file.');
+    //         return;
+    //     }
 
-        const reader = new FileReader();
-        reader.onloadend = () => {
-            setImagePreview(reader.result as string);
-        };
-        reader.readAsDataURL(file);
-    }
+    //     const reader = new FileReader();
+    //     reader.onloadend = () => {
+    //         setImagePreview(reader.result as string);
+    //     };
+    //     reader.readAsDataURL(file);
+    // }
 
     const removeImage = () => {
         setImagePreview(null);
@@ -86,26 +86,26 @@ const MessageInput = () => {
             value={text}
             onChange={(e) => setText(e.target.value)}
           />
-          <input
+          {/* <input
             type="file"
             accept="image/*"
             className="hidden"
             ref={fileInputRef}
             onChange={handleImageChange}
-          />
+          /> */}
 
-          <button
+          {/* <button
             type="button"
             className={`hidden sm:flex btn btn-circle
                      ${imagePreview ? "text-emerald-500" : "text-zinc-400"}`}
             onClick={() => fileInputRef.current?.click()}
           >
             <Image size={20} />
-          </button>
+          </button> */}
         </div>
         <button
           type="submit"
-          className="btn btn-sm btn-circle"
+          className="btn btn-sm btn-circle "
           disabled={!text.trim() && !imagePreview}
         >
           <Send size={22} />
