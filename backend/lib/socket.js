@@ -2,9 +2,11 @@ import { Server } from "socket.io";
 import http from "http";
 import express from "express";
 
-
 const app = express();
 const server = http.createServer(app);
+
+// Store userId <-> socketId mappings
+const userSocketMap = {};
 
 const io = new Server(server, {
   cors: {
@@ -16,34 +18,30 @@ const io = new Server(server, {
   },
 });
 
-
 export function getReceiverSocketId(receiverId) {
-    return userSocketMap[receiverId];
+  return userSocketMap[receiverId];
 }
 
-// create a map to store user socket connections
-const userSocketMap = {
-};
-
-
-
 io.on("connection", (socket) => {
+  const userId = socket.handshake.query.userId;
 
-    console.log("A user connected", socket.id);
-    const userId = socket.handshake.query.userId;
-    if (userId) {
-        userSocketMap[userId] = socket.id;
-    }
-    io.emit("getOnlineUsers", Object.keys(userSocketMap));  
+  if (!userId) {
+    console.warn("⚠️  Connection rejected: userId not provided.");
+    socket.disconnect();
+    return;
+  }
 
-    socket.on("disconnect", () => {
-        console.log("A user disconnected", socket.id);
-        delete userSocketMap[userId];
-        io.emit("getOnlineUsers", Object.keys(userSocketMap));
-    });
+  console.log(`✅ User connected: ${userId} with socket ID: ${socket.id}`);
+  userSocketMap[userId] = socket.id;
 
+  // Notify all users about online users
+  io.emit("getOnlineUsers", Object.keys(userSocketMap));
+
+  socket.on("disconnect", () => {
+    console.log(`❌ User disconnected: ${userId} (socket ${socket.id})`);
+    delete userSocketMap[userId];
+    io.emit("getOnlineUsers", Object.keys(userSocketMap));
+  });
 });
 
 export { io, server, app };
-
-
