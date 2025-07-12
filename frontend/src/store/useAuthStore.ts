@@ -5,6 +5,7 @@ import { io } from "socket.io-client";
 
 
 
+
 type AuthUser = {
   _id: string;
   // add other user fields as needed
