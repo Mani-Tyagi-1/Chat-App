@@ -13,10 +13,12 @@ import { app, server } from "../lib/socket.js";
 app.use(express.json({ limit: "10mb" }));
 app.use(express.urlencoded({ extended: true, limit: "10mb" }));
 app.use(cookieParser());
-app.use(cors({
-    origin: ["http://localhost:5173",'*'],
-    credentials: true
-}));
+app.use(
+  cors({
+    origin: ["http://localhost:5173", "https://chitchat-po0t.onrender.com", "*"],
+    credentials: true,
+  })
+);
 
 
 app.use("/auth", authRoutes);
