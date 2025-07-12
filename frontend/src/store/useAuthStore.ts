@@ -6,7 +6,8 @@ import { io } from "socket.io-client";
 const BASE_URL =
   import.meta.env.MODE === "development"
     ? import.meta.env.VITE_API_URL
-    : "/";
+    : import.meta.env.VITE_API_URL; // use backend URL even in prod
+
 
 type AuthUser = {
   _id: string;
@@ -108,22 +109,33 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
   },
 
   connectSocket: () => {
-    const { authUser } = get();
-    if (!authUser || get().socket?.connected) return;
+    const { authUser, socket } = get();
 
-    const socket = io(BASE_URL, {
+    // Wait until authUser is ready
+    if (!authUser?._id || socket?.connected) return;
+
+    const newSocket = io(BASE_URL, {
       query: {
         userId: authUser._id,
       },
+      withCredentials: true, // important if you use cookies
     });
-    socket.connect();
 
-    set({ socket: socket });
+    newSocket.on("connect", () => {
+      console.log("✅ Socket connected:", newSocket.id);
+    });
 
-    socket.on("getOnlineUsers", (userIds) => {
+    newSocket.on("getOnlineUsers", (userIds) => {
       set({ onlineUsers: userIds });
     });
+
+    newSocket.on("disconnect", () => {
+      console.log("❌ Socket disconnected");
+    });
+
+    set({ socket: newSocket });
   },
+
   disconnectSocket: () => {
     if (get().socket?.connected) get().socket.disconnect();
   },
