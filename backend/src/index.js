@@ -2,6 +2,7 @@ import express from "express";
 import "dotenv/config";
 import authRoutes from "../routes/authRoutes.js";
 import messageRoutes from "../routes/messageRoutes.js";
+import groupRoutes from "../routes/groupRoutes.js";
 import { connectDB } from "../lib/db.js";
 import cookieParser from "cookie-parser";
 import cors from "cors";
@@ -9,6 +10,7 @@ import { app, server } from "../lib/socket.js";
 
 const allowedOrigins = [
   "http://localhost:5173",
+  "http://10.99.55.238:5173",
   "https://chit-chat-kappa-five.vercel.app",
 ];
 
@@ -25,6 +27,7 @@ app.use(
 
 app.use("/auth", authRoutes);
 app.use("/messages/", messageRoutes);
+app.use("/groups", groupRoutes);
 
 // test
 app.get("/", (req, res) => {

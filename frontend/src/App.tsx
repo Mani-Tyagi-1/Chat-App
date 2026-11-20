@@ -6,38 +6,39 @@ import ProfilePage from "./pages/ProfilePage";
 import SettingsPage from "./pages/SettingPage";
 import SignUpPage from "./pages/SignUpPage";
 import { useAuthStore } from "./store/useAuthStore";
+import { useChatStore } from "./store/useChatStore";
 import { useEffect } from "react";
 import { Loader } from "lucide-react";
 import { useThemeStore } from "./store/useThemeStore";
-// Define the expected shape of the auth store
-
-
+import { Toaster } from "react-hot-toast";
 
 const App = () => {
-  const { authUser, checkAuth, isCheckingAuth, onlineUsers } = useAuthStore() as { authUser: any; checkAuth: () => void; isCheckingAuth: boolean; onlineUsers: any };
-  
-  const { theme } = useThemeStore() as { theme: string }
-
-
-  console.log({ onlineUsers });
-
+  const { authUser, checkAuth, isCheckingAuth, socket } = useAuthStore() as any;
+  const { subscribeToMessages, unsubscribeFromMessages } = useChatStore();
+  const { theme } = useThemeStore() as { theme: string };
 
   useEffect(() => {
     checkAuth();
   }, [checkAuth]);
 
-  console.log({ authUser });
+  // Subscribe to socket events globally when authenticated and socket is active
+  useEffect(() => {
+    if (authUser && socket) {
+      subscribeToMessages();
+      return () => unsubscribeFromMessages();
+    }
+  }, [authUser, socket, subscribeToMessages, unsubscribeFromMessages]);
 
   if (isCheckingAuth && !authUser) return (
     <div className="flex items-center justify-center h-screen">
       <Loader className="size-10 animate-spin" />
     </div>
-
   )
 
   return (
     <>
       <div data-theme={theme}>
+        <Toaster position="top-center" reverseOrder={false} />
         <Navbar />
         <Routes>
           <Route

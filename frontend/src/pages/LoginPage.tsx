@@ -23,7 +23,7 @@ const LoginPage = () => {
   
 
   return (
-    <div className="h-screen grid lg:grid-cols-2">
+    <div className="min-h-screen pt-16 lg:pt-0 grid lg:grid-cols-2">
       {/* Left Side - Image/Pattern */}
       <AuthImagePattern
         title={"Welcome back!"}

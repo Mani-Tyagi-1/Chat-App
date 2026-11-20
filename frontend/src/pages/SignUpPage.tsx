@@ -48,7 +48,7 @@ const SignUpPage = () => {
   };
 
   return (
-    <div className="min-h-screen grid lg:grid-cols-2">
+    <div className="min-h-screen pt-16 lg:pt-0 grid lg:grid-cols-2">
       <Toaster position="top-center" reverseOrder={false} />
       {/* left side */}
       <div className="flex flex-col justify-center items-center p-6 sm:p-12">

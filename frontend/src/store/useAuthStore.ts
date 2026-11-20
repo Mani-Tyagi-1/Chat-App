@@ -1,14 +1,16 @@
 import { create } from "zustand";
-import { axiosInstance } from "../lib/axios.js";
+import { axiosInstance, BASE_URL } from "../lib/axios.js";
 import toast from "react-hot-toast";
 import { io } from "socket.io-client";
 
 
 
 
-type AuthUser = {
+export type AuthUser = {
   _id: string;
-  // add other user fields as needed
+  fullName: string;
+  email?: string;
+  profilePic?: string;
 };
 
 type AuthStore = {
@@ -109,7 +111,7 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
     const { authUser } = get();
     if (!authUser || get().socket?.connected) return;
 
-    const socket = io(import.meta.env.VITE_API_URL, {
+    const socket = io(BASE_URL, {
       query: {
         userId: authUser._id,
       },

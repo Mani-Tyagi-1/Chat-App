@@ -12,6 +12,7 @@ const io = new Server(server, {
   cors: {
     origin: [
       "http://localhost:5173",
+      "http://10.99.55.238:5173",
       "https://chit-chat-kappa-five.vercel.app",
     ],
     credentials: true,
@@ -36,6 +37,44 @@ io.on("connection", (socket) => {
 
   // Notify all users about online users
   io.emit("getOnlineUsers", Object.keys(userSocketMap));
+
+  // Typing indicator events
+  socket.on("typing", ({ receiverId }) => {
+    const receiverSocketId = getReceiverSocketId(receiverId);
+    if (receiverSocketId) {
+      io.to(receiverSocketId).emit("userTyping", { senderId: userId });
+    }
+  });
+
+  socket.on("stopTyping", ({ receiverId }) => {
+    const receiverSocketId = getReceiverSocketId(receiverId);
+    if (receiverSocketId) {
+      io.to(receiverSocketId).emit("userStopTyping", { senderId: userId });
+    }
+  });
+
+  // Real-time Mark Messages As Seen event
+  socket.on("markAsSeen", async ({ senderId }) => {
+    try {
+      if (!senderId) return;
+      const Message = (await import("../models/message.model.js")).default;
+      const updateResult = await Message.updateMany(
+        { senderId, receiverId: userId, seen: false },
+        { $set: { seen: true } }
+      );
+
+      if (updateResult.modifiedCount > 0) {
+        const senderSocketId = getReceiverSocketId(senderId);
+        if (senderSocketId) {
+          io.to(senderSocketId).emit("messagesSeen", {
+            seenBy: userId,
+          });
+        }
+      }
+    } catch (err) {
+      console.error("Error in socket markAsSeen:", err);
+    }
+  });
 
   socket.on("disconnect", () => {
     console.log(`❌ User disconnected: ${userId} (socket ${socket.id})`);
