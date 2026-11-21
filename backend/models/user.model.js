@@ -18,6 +18,14 @@ const userSchema = mongoose.Schema({
     profilePic: {
         type: String,
         default: "",
+    },
+    resetOtp: {
+        type: String,
+        default: null,
+    },
+    resetOtpExpires: {
+        type: Date,
+        default: null,
     }
 }, { timestamps: true });
 

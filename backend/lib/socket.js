@@ -8,13 +8,34 @@ const server = http.createServer(app);
 // Store userId <-> socketId mappings
 const userSocketMap = {};
 
+const isAllowedOrigin = (origin) => {
+  if (!origin) return true;
+  if (
+    origin.startsWith("http://localhost:") ||
+    origin.startsWith("http://127.0.0.1:")
+  ) {
+    return true;
+  }
+  if (
+    /^https?:\/\/(192\.168\.\d+\.\d+|10\.\d+\.\d+\.\d+|172\.(1[6-9]|2\d|3[01])\.\d+\.\d+)(:\d+)?$/.test(
+      origin
+    )
+  ) {
+    return true;
+  }
+  if (origin === "https://chit-chat-kappa-five.vercel.app") return true;
+  return false;
+};
+
 const io = new Server(server, {
   cors: {
-    origin: [
-      "http://localhost:5173",
-      "http://10.99.55.238:5173",
-      "https://chit-chat-kappa-five.vercel.app",
-    ],
+    origin: (origin, callback) => {
+      if (isAllowedOrigin(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
     credentials: true,
   },
 });
