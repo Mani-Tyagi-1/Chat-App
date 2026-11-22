@@ -10,8 +10,7 @@ export const generateToken = (userId, res) => {
     res.cookie("jwt", token, {
         httpOnly: true, //accessible only by web server
         secure: process.env.NODE_ENV !== "development",
-        sameSite: "lax",
+        sameSite: process.env.NODE_ENV === "development" ? "lax" : "none",
         maxAge: 7 * 24 * 60 * 60 * 1000,
-        
     })
 } 

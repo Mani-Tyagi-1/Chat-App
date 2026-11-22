@@ -10,6 +10,7 @@ const userSocketMap = {};
 
 const isAllowedOrigin = (origin) => {
   if (!origin) return true;
+  if (process.env.CLIENT_URL && origin === process.env.CLIENT_URL) return true;
   if (
     origin.startsWith("http://localhost:") ||
     origin.startsWith("http://127.0.0.1:")
@@ -23,7 +24,12 @@ const isAllowedOrigin = (origin) => {
   ) {
     return true;
   }
-  if (origin === "https://chit-chat-kappa-five.vercel.app") return true;
+  if (
+    origin === "https://chit-chat-kappa-five.vercel.app" ||
+    origin.endsWith(".vercel.app")
+  ) {
+    return true;
+  }
   return false;
 };
 
