@@ -57,6 +57,9 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
       get().connectSocket();
     } catch (error: any) {
       console.log("Error in checkAuth:", error);
+      if (error.response?.status === 401) {
+        localStorage.removeItem("token");
+      }
       set({ authUser: null });
     } finally {
       set({ isCheckingAuth: false });
@@ -68,6 +71,9 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
     try {
       const res = await axiosInstance.post("/auth/signup", data);
       const user = res.data.user || res.data;
+      if (res.data.token) {
+        localStorage.setItem("token", res.data.token);
+      }
       set({ authUser: user });
       toast.success("Account created successfully");
       get().connectSocket();
@@ -83,6 +89,9 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
     try {
       const res = await axiosInstance.post("/auth/login", data);
       const user = res.data.user || res.data;
+      if (res.data.token) {
+        localStorage.setItem("token", res.data.token);
+      }
       set({ authUser: user });
       toast.success("Logged in successfully");
       get().connectSocket();
@@ -96,10 +105,13 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
   logout: async () => {
     try {
       await axiosInstance.post("/auth/logout");
+      localStorage.removeItem("token");
       set({ authUser: null });
       toast.success("Logged out successfully");
       get().disconnectSocket();
     } catch (error: any) {
+      localStorage.removeItem("token");
+      set({ authUser: null });
       toast.error(error.response?.data?.message || "Logout failed");
     }
   },
@@ -148,6 +160,9 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
     try {
       const res = await axiosInstance.post("/auth/reset-password", data);
       const user = res.data.user || res.data;
+      if (res.data.token) {
+        localStorage.setItem("token", res.data.token);
+      }
       set({ authUser: user });
       toast.success(res.data.message || "Password reset successful! You are now logged in.");
       get().connectSocket();
@@ -162,9 +177,13 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
     const { authUser } = get();
     if (!authUser || !authUser._id || get().socket?.connected) return;
 
+    const token = localStorage.getItem("token");
     const socket = io(BASE_URL, {
       query: {
         userId: authUser._id,
+      },
+      auth: {
+        token: token,
       },
     });
     socket.connect();

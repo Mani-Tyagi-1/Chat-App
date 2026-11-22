@@ -30,10 +30,10 @@ export const signup = async (req, res) => {
 
         if (newUser) {
             // Jwt token
-            generateToken(newUser._id, res);
+            const token = generateToken(newUser._id, res);
             await newUser.save();
             const userData = { _id: newUser._id, fullName: newUser.fullName, email: newUser.email, profilePic: newUser.profilePic || "" };
-            res.status(201).json({ ...userData, message: "User created successfully", user: userData });
+            res.status(201).json({ ...userData, token, message: "User created successfully", user: userData });
         }
         else {
             res.status(500).json({ message: "Invalid User Data" });
@@ -65,9 +65,9 @@ export const login = async (req, res) => {
             return res.status(400).json({ message: "Invalid Credentials" });
         }
 
-        generateToken(user._id, res);
+        const token = generateToken(user._id, res);
         const userData = { _id: user._id, fullName: user.fullName, email: user.email, profilePic: user.profilePic || "" };
-        res.status(200).json({ ...userData, message: "Login successful", user: userData });
+        res.status(200).json({ ...userData, token, message: "Login successful", user: userData });
 
     }
     catch (error) {
@@ -271,10 +271,10 @@ export const resetPassword = async (req, res) => {
         await user.save();
 
         // Generate fresh JWT token
-        generateToken(user._id, res);
+        const token = generateToken(user._id, res);
 
         const userData = { _id: user._id, fullName: user.fullName, email: user.email, profilePic: user.profilePic || "" };
-        res.status(200).json({ ...userData, message: "Password reset successful", user: userData });
+        res.status(200).json({ ...userData, token, message: "Password reset successful", user: userData });
     } catch (error) {
         console.log("Error in resetPassword controller", error.message);
         res.status(500).json({ message: "Internal Server Error" });
